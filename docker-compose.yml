@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  homework-mcp:
+    build: .
+    container_name: homework-math-mcp
+    environment:
+      - SILICONFLOW_API_KEY=${SILICONFLOW_API_KEY}
+      - DEFAULT_MODEL=deepseek-ai/DeepSeek-V2.5
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped

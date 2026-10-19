@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "homework-math": {
+      "type": "stdio",
+      "command": "python",
+      "args": [
+        "-m",
+        "server"
+      ]
+    }
+  }
+}
