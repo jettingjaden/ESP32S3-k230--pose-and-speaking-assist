@@ -1,378 +1,435 @@
-[![Banners](docs/images/banner1.png)](https://github.com/xinnan-tech/xiaozhi-esp32-server)
+<div align="center" id="top">
 
-<h1 align="center">小智后端服务xiaozhi-esp32-server</h1>
+# 星眸智能护眼仪 StarMou
 
-<p align="center">
-本项目基于人机共生智能理论和技术研发智能终端软硬件体系<br/>为开源智能硬件项目
-<a href="https://github.com/78/xiaozhi-esp32">xiaozhi-esp32</a>提供后端服务<br/>
-根据<a href="https://ccnphfhqs21z.feishu.cn/wiki/M0XiwldO9iJwHikpXD5cEx71nKh">小智通信协议</a>使用Python、Java、Vue实现<br/>
-支持MQTT+UDP协议、Websocket协议、MCP接入点、声纹识别、知识库
-</p>
+**坐姿识别 · 语音提醒 · 自适应调光 —— 一台会"看着你"的护眼台灯**
 
-<p align="center">
-<a href="./docs/FAQ.md">常见问题</a>
-· <a href="https://github.com/xinnan-tech/xiaozhi-esp32-server/issues">反馈问题</a>
-· <a href="./README.md#%E9%83%A8%E7%BD%B2%E6%96%87%E6%A1%A3">部署文档</a>
-· <a href="https://github.com/xinnan-tech/xiaozhi-esp32-server/releases">更新日志</a>
-</p>
+基于 **K230 视觉姿态识别 + ESP32-S3 语音交互** 的双芯片方案，
+把模糊的"护眼"需求拆解成可验证的闭环：**识别 → 提醒 → 调光**
 
-<p align="center">
-  <a href="./README.md"><img alt="简体中文版自述文件" src="https://img.shields.io/badge/简体中文-DBEDFA"></a>
-  <a href="./README_en.md"><img alt="README in English" src="https://img.shields.io/badge/English-DFE0E5"></a>
-  <a href="./README_vi.md"><img alt="Tiếng Việt" src="https://img.shields.io/badge/Tiếng Việt-DFE0E5"></a>
-  <a href="./README_de.md"><img alt="Deutsch" src="https://img.shields.io/badge/Deutsch-DFE0E5"></a>
-  <a href="./README_pt_BR.md"><img alt="Português (Brasil)" src="https://img.shields.io/badge/Português (Brasil)-DFE0E5"></a>
-  <a href="https://github.com/xinnan-tech/xiaozhi-esp32-server/releases">
-    <img alt="GitHub Contributors" src="https://img.shields.io/github/v/release/xinnan-tech/xiaozhi-esp32-server?logo=docker" />
-  </a>
-  <a href="https://github.com/xinnan-tech/xiaozhi-esp32-server/blob/main/LICENSE">
-    <img alt="GitHub pull requests" src="https://img.shields.io/badge/license-MIT-white?labelColor=black" />
-  </a>
-  <a href="https://github.com/xinnan-tech/xiaozhi-esp32-server">
-    <img alt="stars" src="https://img.shields.io/github/stars/xinnan-tech/xiaozhi-esp32-server?color=ffcb47&labelColor=black" />
-  </a>
-</p>
+[![Vision](https://img.shields.io/badge/vision-K230%20%2B%20YOLO--Pose-orange.svg)](https://www.canaan-creative.com/)
+[![MCU](https://img.shields.io/badge/mcu-ESP32--S3-blue.svg)](https://www.espressif.com/)
+[![Voice](https://img.shields.io/badge/voice-MCP%20%2B%20LLM-green.svg)](https://modelcontextprotocol.io/)
+[![Award](https://img.shields.io/badge/第十九届广东省计算机设计大赛-省赛三等奖-red.svg)](#-团队与分工)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-<p align="center">
-Spearheaded by Professor Siyuan Liu's Team (South China University of Technology)
-</br>
-刘思源教授团队主导研发（华南理工大学）
-</br>
-<img src="./docs/images/hnlg.jpg" alt="华南理工大学" width="50%">
-</p>
+[项目简介](#-项目简介) · [系统架构](#-系统架构) · [硬件清单](#-硬件清单) · [快速开始](#-快速开始) · [串口协议](#-串口通信协议) · [常见问题](#-常见问题)
+
+</div>
 
 ---
 
-## 适用人群 👥
+## 📌 项目简介
 
-本项目需要配合 ESP32 硬件设备使用。如果您已经购买了 ESP32 相关硬件，且成功对接过虾哥部署的后端服务，并希望独立搭建自己的
-`xiaozhi-esp32` 后端服务，那么本项目非常适合您。
+### 要解决什么
 
-想看使用效果？请猛戳视频 🎥
+青少年长时间伏案，家长不在身边时没人提醒。市面上的护眼台灯**只解决了"光"的问题**（调亮度、调色温），却看不到**"人"的姿势**——而近视和脊柱问题，恰恰主要来自长期低头、前倾、驼背。
 
-<table>
-  <tr>
-    <td>
-        <a href="https://www.bilibili.com/video/BV1FMFyejExX" target="_blank">
-         <picture>
-           <img alt="响应速度感受" src="docs/images/demo9.png" />
-         </picture>
-        </a>
-    </td>
-    <td>
-        <a href="https://www.bilibili.com/video/BV1vchQzaEse" target="_blank">
-         <picture>
-           <img alt="速度优化秘诀" src="docs/images/demo6.png" />
-         </picture>
-        </a>
-    </td>
-    <td>
-        <a href="https://www.bilibili.com/video/BV1C1tCzUEZh" target="_blank">
-         <picture>
-           <img alt="复杂医疗场景" src="docs/images/demo1.png" />
-         </picture>
-        </a>
-    </td>
-    <td>
-        <a href="https://www.bilibili.com/video/BV1zUW5zJEkq" target="_blank">
-         <picture>
-           <img alt="MQTT指令下发" src="docs/images/demo4.png" />
-         </picture>
-        </a>
-    </td>
-    <td>
-        <a href="https://www.bilibili.com/video/BV1Exu3zqEDe" target="_blank">
-         <picture>
-           <img alt="声纹识别" src="docs/images/demo14.png" />
-         </picture>
-        </a>
-    </td>
-  </tr>
-  <tr>
-    <td>
-        <a href="https://www.bilibili.com/video/BV1pNXWYGEx1" target="_blank">
-         <picture>
-           <img alt="控制家电开关" src="docs/images/demo5.png" />
-         </picture>
-        </a>
-    </td>
-    <td>
-        <a href="https://www.bilibili.com/video/BV1ZQKUzYExM" target="_blank">
-         <picture>
-           <img alt="MCP接入点" src="docs/images/demo13.png" />
-         </picture>
-        </a>
-    </td>
-    <td>
-      <a href="https://www.bilibili.com/video/BV1TJ7WzzEo6" target="_blank">
-         <picture>
-           <img alt="多指令任务" src="docs/images/demo11.png" />
-         </picture>
-        </a>
-    </td>
-    <td>
-        <a href="https://www.bilibili.com/video/BV1VC96Y5EMH" target="_blank">
-         <picture>
-           <img alt="播放音乐" src="docs/images/demo7.png" />
-         </picture>
-        </a>
-    </td>
-    <td>
-        <a href="https://www.bilibili.com/video/BV1Z8XuYZEAS" target="_blank">
-         <picture>
-           <img alt="天气插件" src="docs/images/demo8.png" />
-         </picture>
-        </a>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <a href="https://www.bilibili.com/video/BV12J7WzBEaH" target="_blank">
-         <picture>
-           <img alt="实时打断" src="docs/images/demo10.png" />
-         </picture>
-        </a>
-    </td>
-    <td>
-      <a href="https://www.bilibili.com/video/BV1Co76z7EvK" target="_blank">
-         <picture>
-           <img alt="拍照识物品" src="docs/images/demo12.png" />
-         </picture>
-        </a>
-    </td>
-    <td>
-        <a href="https://www.bilibili.com/video/BV1CDKWemEU6" target="_blank">
-         <picture>
-           <img alt="自定义音色" src="docs/images/demo2.png" />
-         </picture>
-        </a>
-    </td>
-    <td>
-        <a href="https://www.bilibili.com/video/BV12yA2egEaC" target="_blank">
-         <picture>
-           <img alt="使用粤语交流" src="docs/images/demo3.png" />
-         </picture>
-        </a>
-    </td>
-    <td>
-        <a href="https://www.bilibili.com/video/BV17LXWYvENb" target="_blank">
-         <picture>
-           <img alt="播报新闻" src="docs/images/demo0.png" />
-         </picture>
-        </a>
-    </td>
-  </tr>
-</table>
+### 我们的做法
+
+| 能力 | 实现 | 效果 |
+|---|---|---|
+| **看得见** | K230 端运行 YOLO-Pose 关键点检测，本地实时推理 | 识别低头 / 颈部前倾 / 驼背，画面不上云 |
+| **会提醒** | ESP32-S3 语音助手，TTS 播报 + 云端大模型生成自然话术 | 不用屏幕，直接开口提醒 |
+| **能调光** | 光照传感器 + PWM 无级调光，舵机调节灯臂角度 | 按环境亮度自动补光，照射角度跟着坐姿走 |
+| **可闭环** | 识别 → 判断 → 提醒 → 调光 → 再次识别 | 不是一次性告警，而是持续纠偏 |
+
+> **设计原则**：视觉在端侧（隐私 + 低延迟）、语音与语义在云端（自然 + 可扩展）、控制在本地（断网也能调光）。
 
 ---
 
-## 警告 ⚠️
+## 🏗️ 系统架构
 
-1、本项目为开源软件，本软件与对接的任何第三方API服务商（包括但不限于语音识别、大模型、语音合成等平台）均不存在商业合作关系，不为其服务质量及资金安全提供任何形式的担保。
-建议使用者优先选择持有相关业务牌照的服务商，并仔细阅读其服务协议及隐私政策。本软件不托管任何账户密钥、不参与资金流转、不承担充值资金损失风险。
+```mermaid
+flowchart TB
+    subgraph INPUT["感知层"]
+        CAM["摄像头<br/>OV5647 / GC2093"]
+        LIGHT["光照传感器<br/>BH1750"]
+    end
 
-2、本项目功能未完善，且未通过网络安全测评，请勿在生产环境中使用。 如果您在公网环境中部署学习本项目，请务必做好必要的防护。
+    subgraph VISION["视觉单元 · K230"]
+        V1["YOLO-Pose<br/>关键点检测"]
+        V2["姿态判定<br/>角度阈值 + 连续帧确认"]
+        V3["结果编码<br/>串口帧封装"]
+        V1 --> V2 --> V3
+    end
 
----
+    subgraph MAIN["主控 · ESP32-S3"]
+        M1["UART 接收<br/>帧解析 + 校验"]
+        M2["决策与状态机<br/>正常 / 提醒 / 纠偏"]
+        M3["PWM 调光"]
+        M4["舵机控制<br/>灯臂角度"]
+        M5["语音助手<br/>唤醒 · ASR · TTS"]
+        M1 --> M2
+        M2 --> M3
+        M2 --> M4
+        M2 --> M5
+    end
 
-## 部署文档
+    subgraph CLOUD["云端"]
+        C1["大模型<br/>话术生成"]
+        C2["MCP 服务<br/>能力扩展"]
+        C1 <--> C2
+    end
 
-![Banners](docs/images/banner2.png)
+    CAM --> V1
+    LIGHT --> M2
+    V3 -->|"UART 115200"| M1
+    M5 <-->|WiFi| C1
 
-本项目提供两种部署方式，请根据您的具体需求选择：
-
-#### 🚀 部署方式选择
-| 部署方式 | 特点 | 适用场景 | 部署文档 | 配置要求 | 视频教程 | 
-|---------|------|---------|---------|---------|---------|
-| **最简化安装** | 智能对话、单智能体管理 | 低配置环境，数据存储在配置文件，无需数据库 | [①Docker版](./docs/Deployment.md#%E6%96%B9%E5%BC%8F%E4%B8%80docker%E5%8F%AA%E8%BF%90%E8%A1%8Cserver) / [②源码部署](./docs/Deployment.md#%E6%96%B9%E5%BC%8F%E4%BA%8C%E6%9C%AC%E5%9C%B0%E6%BA%90%E7%A0%81%E5%8F%AA%E8%BF%90%E8%A1%8Cserver)| 如果使用`FunASR`要2核4G，如果全API，要2核2G | - | 
-| **全模块安装** | 智能对话、多用户管理、多智能体管理、智控台界面操作 | 完整功能体验，数据存储在数据库 |[①Docker版](./docs/Deployment_all.md#%E6%96%B9%E5%BC%8F%E4%B8%80docker%E8%BF%90%E8%A1%8C%E5%85%A8%E6%A8%A1%E5%9D%97) / [②源码部署](./docs/Deployment_all.md#%E6%96%B9%E5%BC%8F%E4%BA%8C%E6%9C%AC%E5%9C%B0%E6%BA%90%E7%A0%81%E8%BF%90%E8%A1%8C%E5%85%A8%E6%A8%A1%E5%9D%97) / [③源码部署自动更新教程](./docs/dev-ops-integration.md) | 如果使用`FunASR`要4核8G，如果全API，要2核4G| [本地源码启动视频教程](https://www.bilibili.com/video/BV1wBJhz4Ewe) | 
-
-常见问题及相关教程，可参考[这个链接](./docs/FAQ.md)
-
-> 💡 提示：以下是按最新代码部署后的测试平台，有需要可烧录测试，并发为6个，每天会清空数据，
-
-```
-智控台地址: https://2662r3426b.vicp.fun
-智控台(h5版): https://2662r3426b.vicp.fun/h5/index.html
-
-服务测试工具： https://2662r3426b.vicp.fun/test/
-OTA接口地址: https://2662r3426b.vicp.fun/xiaozhi/ota/
-Websocket接口地址: wss://2662r3426b.vicp.fun/xiaozhi/v1/
+    M3 --> OUT1["灯珠亮度"]
+    M4 --> OUT2["灯臂姿态"]
+    M5 --> OUT3["语音提醒"]
 ```
 
-#### 🚩 配置说明和推荐
-> [!Note]
-> 本项目提供两种配置方案：
-> 
-> 1. `入门全免费`配置：适合个人家庭使用，所有组件均采用免费方案，无需额外付费。
-> 
-> 2. `流式配置`：适合演示、培训、超过2个并发等场景，采用流式处理技术，响应速度更快，体验更佳。
-> 
-> 自`0.5.2`版本起，项目支持流式配置，相比早期版本，响应速度提升约`2.5秒`，显著改善用户体验。
+### 为什么是双芯片
 
-| 模块名称 | 入门全免费设置 | 流式配置 |
-|:---:|:---:|:---:|
-| ASR(语音识别) | FunASR(本地) | 👍XunfeiStreamASR(讯飞流式) |
-| LLM(大模型) | glm-4-flash(智谱) | 👍qwen-flash(阿里百炼) |
-| VLLM(视觉大模型) | glm-4v-flash(智谱) | 👍qwen3.5-flash(阿里百炼) |
-| TTS(语音合成) | EdgeTTS(微软) | 👍HuoshanDoubleStreamTTS(火山流式) |
-| Intent(意图识别) | function_call(函数调用) | function_call(函数调用) |
-| Memory(记忆功能) | mem_local_short(本地短期记忆） | mem_local_short（本地短期记忆） |
+| | K230 | ESP32-S3 |
+|---|---|---|
+| 承担 | 视觉推理（算力密集） | 控制 + 语音 + 联网（IO 密集） |
+| 理由 | 自带 KPU，能跑 `.kmodel` 量化模型，实时性够 | WiFi/BT 原生、外设丰富、功耗低、语音生态成熟 |
+| 不做对方的事 | 不接网络、不做控制 | 不跑视觉、不处理图像 |
 
-如果您关心各组件的耗时，请查阅[小智各组件性能测试报告](https://github.com/xinnan-tech/xiaozhi-performance-research)，可按报告中的测试方法在您的环境中实际测试。
+**这样分工的好处**：视觉端不联网 → 图像数据不出设备；主控端不跑模型 → 语音和控制不被推理卡住。
 
-#### 🔧 测试工具
-本项目提供以下测试工具，帮助您验证系统和选择合适的模型：
+### 数据流
 
-| 工具名称 | 位置 | 使用方法 | 功能说明 |
-|:---:|:---|:---:|:---:|
-| 音频交互测试工具 | main》xiaozhi-server》test》test_page.html | 使用谷歌浏览器直接打开 | 测试音频播放和接收功能，验证Python端音频处理是否正常 |
-| 模型响应测试工具 | main》xiaozhi-server》performance_tester.py | 执行 `python performance_tester.py` | 测试ASR(语音识别)、LLM(大模型)、VLLM(视觉模型)、TTS(语音合成)三个核心模块的响应速度 |
-
-> 💡 提示：测试模型速度时，只会测试配置了密钥的模型。
-
----
-## 功能清单 ✨
-### 已实现 ✅
-![请参考-全模块安装架构图](docs/images/deploy2.png)
-| 功能模块 | 描述 |
-|:---:|:---|
-| 核心架构 | 基于[MQTT+UDP网关](https://github.com/xinnan-tech/xiaozhi-esp32-server/blob/main/docs/mqtt-gateway-integration.md)、WebSocket、HTTP服务器，提供完整的控制台管理和认证系统 |
-| 语音交互 | 支持流式ASR(语音识别)、流式TTS(语音合成)、VAD(语音活动检测)，支持多语言识别和语音处理 |
-| 声纹识别 | 支持多用户声纹注册、管理和识别，与ASR并行处理，实时识别说话人身份并传递给LLM进行个性化回应 |
-| 智能对话 | 支持多种LLM(大语言模型)，实现智能对话 |
-| 视觉感知 | 支持多种VLLM(视觉大模型)，实现多模态交互 |
-| 意图识别 | 支持外挂的大模型意图识别、大模型自主函数调用，提供插件化意图处理机制 |
-| 记忆系统 | 支持本地短期记忆、mem0ai接口记忆、PowerMem智能记忆，具备记忆总结功能 |
-| 知识库 | 支持RAGFlow知识库，让大模型判断需要调度知识库后再回答 |
-| 工具调用 | 支持客户端IOT协议、客户MCP协议、服务端MCP协议、MCP接入点协议、自定义工具函数 |
-| 指令下发 | 依托MQTT协议，支持从智控台将MCP指令下发到ESP32设备 |
-| 管理后台 | 提供Web管理界面，支持用户管理、系统配置和设备管理；界面支持中文简体、中文繁体、英文显示 |
-| 测试工具 | 提供性能测试工具、视觉模型测试工具和音频交互测试工具 |
-| 部署支持 | 支持Docker部署和本地部署，提供完整的配置文件管理 |
-| 插件系统 | 支持功能插件扩展、自定义插件开发和插件热加载 |
-
-### 正在开发 🚧
-
-想了解具体开发计划进度，[请点击这里](https://github.com/users/xinnan-tech/projects/3)。常见问题及相关教程，可参考[这个链接](./docs/FAQ.md)
-
-如果你是一名软件开发者，这里有一份[《致开发者的公开信》](docs/contributor_open_letter.md)，欢迎加入！
+```text
+摄像头 → K230 推理 → 17 个关键点 → 计算颈角/背角
+      → 连续 N 帧超标? → 是 → UART 发送 {类别, 角度, 置信度}
+                                    ↓
+      ESP32-S3 校验 → 状态机判断（是否冷却期/是否已提醒）
+                                    ↓
+              ├→ TTS 语音提醒（"坐直一点哦"）
+              ├→ PWM 调整亮度（补光）
+              └→ 舵机微调灯臂（改善照射角度）
+```
 
 ---
 
-## 产品生态 👬
-小智是一个生态，当你使用这个产品时，也可以看看其他在这个生态圈的[优秀项目](https://github.com/78/xiaozhi-esp32/blob/main/README_zh.md#%E7%9B%B8%E5%85%B3%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE)
+## 🧠 坐姿判定逻辑
+
+### 关键点选取
+
+基于 YOLO-Pose 输出的 17 个关键点，只用其中 5 个，减少噪声：
+
+| 部位 | 关键点 | 用途 |
+|---|---|---|
+| 鼻 / 眼 / 耳 | Nose, L/R-Eye, L/R-Ear | 计算**低头角度**（头部前倾） |
+| 肩 | L/R-Shoulder | 计算**驼背角度**（背部弯曲） |
+| 髋 | L/R-Hip | 作为躯干基准线 |
+
+### 三个判定维度
+
+| 判定项 | 几何定义 | 触发条件 | 提醒话术方向 |
+|---|---|---|---|
+| **低头** | 耳—眼连线与水平线夹角 | 超过阈值并持续 | "头抬一点，脖子会累" |
+| **颈部前倾** | 耳—肩连线与竖直方向夹角 | 超过阈值并持续 | "离桌子太近啦" |
+| **驼背** | 肩—髋连线与竖直方向夹角 | 超过阈值并持续 | "背挺直一些" |
+
+### 抗抖动设计
+
+单点角度容易因为一帧的误检就误报，所以加了三层过滤：
+
+1. **置信度过滤**：关键点置信度低于阈值的关键帧直接丢弃
+2. **连续帧确认**：连续 **N 帧**（默认 30 帧，约 1–2 秒）均超标才判定为真
+3. **冷却期**：一次提醒后进入冷却期（默认 30 秒），避免反复打扰
+
+```python
+# 伪代码：连续帧确认 + 冷却期
+if angle > THRESHOLD:
+    bad_frame_count += 1
+    if bad_frame_count >= N_FRAMES and time_since_last_remind > COOLDOWN:
+        send_uart(POSTURE_BAD, angle)
+        time_since_last_remind = now
+        bad_frame_count = 0
+else:
+    bad_frame_count = max(0, bad_frame_count - 1)   # 缓慢回落，避免频繁横跳
+```
+
+> ⚠️ **阈值必须自己标定**：角度阈值与摄像头的安装高度、俯仰角强相关，上面给的是**建议起点**，请按 `tools/calibrate.py`（自建）实测标定后填入 `config.h`。
 
 ---
 
-## 本项目支持的平台/组件列表 📋
-### LLM 语言模型
+## 🧰 硬件清单
 
-| 使用方式 | 支持平台 | 免费平台 |
-|:---:|:---:|:---:|
-| openai 接口调用 | 阿里百炼、火山引擎、DeepSeek、智谱、Gemini、科大讯飞 | 智谱、Gemini |
-| ollama 接口调用 | Ollama | - |
-| dify 接口调用 | Dify | - |
-| fastgpt 接口调用 | Fastgpt | - |
-| coze 接口调用 | Coze | - |
-| xinference 接口调用 | Xinference | - |
-| homeassistant 接口调用 | HomeAssistant | - |
+| 类别 | 器件 | 推荐型号 | 数量 | 用途 |
+|---|---|---|---|---|
+| 视觉 | 视觉开发板 | 勘智 **K230**（CanMV-K230） | 1 | 姿态推理 |
+| 视觉 | 摄像头 | OV5647 / GC2093（MIPI CSI） | 1 | 采集坐姿画面 |
+| 主控 | MCU | **ESP32-S3**（建议 N8R8，带 PSRAM） | 1 | 控制 + 语音 + 联网 |
+| 音频 | 麦克风 | INMP441（I2S） | 1 | 语音输入 |
+| 音频 | 功放 + 喇叭 | MAX98357A + 4Ω 3W | 1 | TTS 播报 |
+| 光照 | 光照传感器 | BH1750（I2C）或光敏电阻 + ADC | 1 | 环境亮度采集 |
+| 光源 | 灯珠 / 灯板 | 高显色 LED（Ra ≥ 95，建议 4000K） | 1 | 主照明 |
+| 驱动 | 舵机 | MG996R / SG90 | 1–2 | 灯臂角度调节 |
+| 电源 | 电池 | 3.7V 锂电池 + 充放电模块 | 1 | 便携供电 |
+| 结构 | 灯臂 / 底座 | 3D 打印件或现成台灯改装 | 1 套 | 结构支撑 |
+| 其它 | 导线、Type-C 充电口、拨动开关、外壳 | — | 若干 | 装配 |
 
-实际上，任何支持 openai 接口调用的 LLM 均可接入使用。
-
----
-
-### VLLM 视觉模型
-
-| 使用方式 | 支持平台 | 免费平台 |
-|:---:|:---:|:---:|
-| openai 接口调用 | 阿里百炼、智谱ChatGLMVLLM | 智谱ChatGLMVLLM |
-
-实际上，任何支持 openai 接口调用的 VLLM 均可接入使用。
+> 💡 **关于 LED**：护眼的核心是**高显色 + 无频闪 + 合适色温**，选型时优先看 `Ra` 和频闪指标，而不是单纯追求亮度。
 
 ---
 
-### TTS 语音合成
+## 🔌 接线参考
 
-| 使用方式 | 支持平台 | 免费平台 |
-|:---:|:---:|:---:|
-| 接口调用 | EdgeTTS、科大讯飞、火山引擎、腾讯云、阿里云及百炼、CosyVoiceSiliconflow、TTS302AI、CozeCnTTS、GizwitsTTS、ACGNTTS、OpenAITTS、灵犀流式TTS、MinimaxTTS | 灵犀流式TTS、EdgeTTS、CosyVoiceSiliconflow(部分) |
-| 本地服务 | FishSpeech、GPT_SOVITS_V2、GPT_SOVITS_V3、Index-TTS、PaddleSpeech | Index-TTS、PaddleSpeech、FishSpeech、GPT_SOVITS_V2、GPT_SOVITS_V3 |
+### K230 ↔ ESP32-S3（UART）
 
----
+```text
+K230              ESP32-S3
+GPIO  (TX)  ---->  GPIO17 (RX2)
+GPIO  (RX)  <----  GPIO18 (TX2)
+GND         ----   GND          # 必须共地，否则数据乱码
+```
 
-### VAD 语音活动检测
+### ESP32-S3 外设
 
-| 类型  |   平台名称    | 使用方式 | 收费模式 | 备注 |
-|:---:|:---------:|:----:|:----:|:--:|
-| VAD | SileroVAD | 本地使用 |  免费  |    |
+| 外设 | 接口 | 引脚（示例） |
+|---|---|---|
+| 麦克风 INMP441 | I2S | BCLK=GPIO4, WS=GPIO5, DIN=GPIO6 |
+| 功放 MAX98357A | I2S | BCLK=GPIO15, LRC=GPIO16, DOUT=GPIO7 |
+| 光照 BH1750 | I2C | SDA=GPIO8, SCL=GPIO9 |
+| 舵机 | PWM | GPIO10（灯臂俯仰） |
+| LED 调光 | PWM | GPIO11（接 MOS 管驱动灯板） |
 
----
-
-### ASR 语音识别
-
-| 使用方式 | 支持平台 | 免费平台 |
-|:---:|:---:|:---:|
-| 本地使用 | FunASR、SherpaASR | FunASR、SherpaASR |
-| 接口调用 | FunASRServer、火山引擎、科大讯飞、腾讯云、阿里云、百度云、OpenAI ASR | FunASRServer |
-
----
-
-### Voiceprint 声纹识别
-
-| 使用方式 | 支持平台 | 免费平台 |
-|:---:|:---:|:---:|
-| 本地使用 | 3D-Speaker | 3D-Speaker |
+> ⚠️ 引脚仅为示例，请以你手上的板子和固件为准修改 `include/config.h`。ESP32-S3 的 GPIO 有部分为 Strapping 引脚，避免占用 GPIO0/GPIO3/GPIO45/GPIO46。
 
 ---
 
-### Memory 记忆存储
+## 📡 串口通信协议
 
-|   类型   |      平台名称       | 使用方式 |   收费模式    | 备注 |
-|:------:|:---------------:|:----:|:---------:|:--:|
-| Memory |     mem0ai      | 接口调用 | 1000次/月额度 |    |
-| Memory |     [powermem](./docs/powermem-integration.md)    | 本地总结 | 取决于LLM和DB |  OceanBase开源，支持智能检索  |
-| Memory | mem_local_short | 本地总结 |    免费     |    |
-| Memory |     nomem       | 无记忆模式 |    免费     |    |
+K230 与 ESP32-S3 之间走自定义帧，带帧头、长度、校验，避免串口噪声导致的误动作。
+
+### 帧格式
+
+| 字段 | 长度 | 值 / 说明 |
+|:---:|:---:|---|
+| 帧头 | 2 B | `0xAA` `0x55` |
+| 类型 | 1 B | `0x01`=坐姿异常 `0x02`=坐姿正常 `0x03`=心跳 |
+| 姿态类别 | 1 B | `0`=正常 `1`=低头 `2`=颈部前倾 `3`=驼背 |
+| 角度 | 1 B | 0–90，单位度（超出按 90 饱和） |
+| 置信度 | 1 B | 0–100 |
+| 校验 | 1 B | 前面所有字节累加和取低 8 位 |
+| 帧尾 | 1 B | `0x0D` |
+
+**示例**（低头 32°，置信度 87）：
+
+```text
+AA 55 01 01 20 57 XX 0D
+│  │  │  │  │  │  └─ 帧尾
+│  │  │  │  │  └──── 置信度 0x57 = 87
+│  │  │  │  └─────── 角度 0x20 = 32°
+│  │  │  └────────── 类别 1 = 低头
+│  │  └───────────── 类型 0x01 = 坐姿异常
+│  └──────────────── 帧头
+```
+
+### 解析要点
+
+- **必须校验**：校验和不匹配的帧直接丢弃，否则串口干扰会导致灯乱闪、喇叭乱叫
+- **状态机接收**：按字节状态机解析（找帧头 → 收类型 → 收长度 → 校验），不要一次 `read()` 就当一帧
+- **心跳机制**：K230 每 2 秒发一次 `0x03`，主控超时未收到则判定视觉端掉线，进安全状态（保持当前亮度）
 
 ---
 
-### Intent 意图识别
+## 🚀 快速开始
 
-|   类型   |     平台名称      | 使用方式 |  收费模式   |          备注           |
-|:------:|:-------------:|:----:|:-------:|:---------------------:|
-| Intent |  intent_llm   | 接口调用 | 根据LLM收费 |    通过大模型识别意图，通用性强     |
-| Intent | function_call | 接口调用 | 根据LLM收费 | 通过大模型函数调用完成意图，速度快，效果好 |
-| Intent |    nointent   | 无意图模式 |    免费     |    不进行意图识别，直接返回对话结果     |
+### 前置条件
+
+- CanMV / K230 SDK（模型转换用 `nncase`）
+- ESP-IDF v5.x 或 Arduino-ESP32（二选一，本项目主控代码基于 `<!-- TODO: 你实际用的框架 -->`）
+- Python 3.8+（数据集处理、标注、训练）
+- 语音助手固件（ESP32-S3 侧，唤醒词「小智」）
+
+### 1️⃣ 准备数据集
+
+```bash
+# 采集：不同身高/坐姿/光照条件下的人体坐姿图像
+python tools/collect.py --output data/raw --camera 0
+
+# 标注（关键点格式）
+python tools/label.py --input data/raw --output data/labels
+
+# 增强：亮度扰动 + 水平翻转 + 轻微旋转，提升鲁棒性
+python tools/augment.py --input data/labels --output data/train --times 3
+```
+
+> 💡 采集建议：覆盖**戴眼镜 / 扎头发 / 穿帽衫 / 侧光 / 背光**等场景，否则实际使用时容易误判。
+
+### 2️⃣ 训练并导出模型
+
+```bash
+# 训练 YOLO-Pose（关键点检测）
+yolo pose train data=sitting.yaml model=yolov8n-pose.pt epochs=150 imgsz=320
+
+# 转 K230 可用的 .kmodel（nncase 量化）
+python tools/to_kmodel.py --onnx best.onnx --output model/sitting_pose.kmodel --calib data/calib
+```
+
+### 3️⃣ 烧录 K230 视觉端
+
+```bash
+# 把 .kmodel 与推理脚本放到 K230
+k230_deploy.sh model/sitting_pose.kmodel vision/main.py
+```
+
+### 4️⃣ 编译烧录 ESP32-S3 主控
+
+```bash
+# 修改配置：WiFi、引脚、阈值、冷却时间
+vim include/config.h
+
+idf.py build flash monitor
+# 或 Arduino：选择 ESP32S3 Dev Module → Upload
+```
+
+### 5️⃣ 装配与联调
+
+1. 先**分模块验证**：摄像头能出图 → 舵机能转 → 灯能调光 → 喇叭能响 → 串口能通
+2. 再**联调整体**：把 K230 与 ESP32-S3 接好，用手故意做低头动作，观察串口日志
+3. 最后**装机封装**：固定各模块位置，注意**摄像头与 K230 的排线别被灯臂运动拉扯**
+
+> ⚠️ 焊接与装配顺序建议：先裸板调通所有功能，再装外壳。装壳后再改线非常痛苦。
 
 ---
 
-### Rag 检索增强生成
+## 📁 项目结构
 
-|   类型   |     平台名称      | 使用方式 |  收费模式   |          备注           |
-|:------:|:-------------:|:----:|:-------:|:---------------------:|
-| Rag |  ragflow   | 接口调用 | 根据切片、分词消耗的token收费 |    借助RagFlow的检索增强生成功能，提供更准确的对话回复     |
+```text
+StarMou/
+├── vision/                  # K230 视觉端
+│   ├── main.py              # 主循环：采集 → 推理 → 判定 → 串口发送
+│   ├── pose_model.kmodel    # 量化后的姿态模型
+│   └── uart_protocol.py     # 帧封装
+├── main/                    # ESP32-S3 主控
+│   ├── main.c               # 入口
+│   ├── uart_handler.c       # 串口接收状态机 + 校验
+│   ├── posture_fsm.c        # 坐姿状态机（正常/提醒/冷却）
+│   ├── pwm_light.c          # PWM 自适应调光
+│   ├── servo.c              # 舵机灯臂控制
+│   └── voice.c              # 语音助手接入 + TTS 播报
+├── include/
+│   └── config.h             # 引脚、阈值、冷却时间等集中配置
+├── tools/                   # 数据集与模型工具
+├── model/                   # 训练产物
+├── docs/                    # 结构图、电路图、装配说明
+└── README.md
+```
 
 ---
 
-## 鸣谢 🙏
+## 📊 效果与测试
 
-| Logo | 项目/公司 | 说明 |
-|:---:|:---:|:---|
-| <img src="./docs/images/logo_bailing.png" width="160"> | [百聆语音对话机器人](https://github.com/wwbin2017/bailing) | 本项目受[百聆语音对话机器人](https://github.com/wwbin2017/bailing)启发，并在其基础上实现 |
-| <img src="./docs/images/logo_tenclass.png" width="160"> | [十方融海](https://www.tenclass.com/) | 感谢[十方融海](https://www.tenclass.com/)为小智生态制定了标准的通讯协议、多设备兼容性方案及高并发场景实践示范；为本项目提供了全链路技术文档支持 |
-| <img src="./docs/images/logo_xuanfeng.png" width="160"> | [玄凤科技](https://github.com/Eric0308) | 感谢[玄凤科技](https://github.com/Eric0308)贡献函数调用框架、MCP通信协议及插件化调用机制的实现代码，通过标准化的指令调度体系与动态扩展能力，显著提升了前端设备(IoT)的交互效率和功能延展性 |
-| <img src="./docs/images/logo_junsen.png" width="160"> | [huangjunsen](https://github.com/huangjunsen0406) | 感谢[huangjunsen](https://github.com/huangjunsen0406) 贡献`智控台移动端`模块，实现了跨平台移动设备的高效控制与实时交互，大幅提升了系统在移动场景下的操作便捷性和管理效率 |
-| <img src="./docs/images/logo_huiyuan.png" width="160"> | [汇远设计](http://ui.kwd988.net/) | 感谢[汇远设计](http://ui.kwd988.net/)为本项目提供专业视觉解决方案，用其服务超千家企业的设计实战经验，赋能本项目产品用户体验 |
-| <img src="./docs/images/logo_qinren.png" width="160"> | [西安勤人信息科技](https://www.029app.com/) | 感谢[西安勤人信息科技](https://www.029app.com/)深化本项目视觉体系，确保整体设计风格在多场景应用中的一致性和扩展性 |
-| <img src="./docs/images/logo_contributors.png" width="160"> | [代码贡献者](https://github.com/xinnan-tech/xiaozhi-esp32-server/graphs/contributors) | 感谢[所有代码贡献者](https://github.com/xinnan-tech/xiaozhi-esp32-server/graphs/contributors)贡献者，你们的付出让项目更加健壮和强大。 |
+测试方法：自建测试集（不同人 × 不同坐姿 × 不同光照），统计识别结果与人工标注的对比。
 
+| 指标 | 结果 | 说明 |
+|---|:---:|---|
+| 坐姿识别准确率 | `<!-- TODO: 填入实测值 -->` | 正/异常坐姿分类准确率 |
+| 误报率 | `<!-- TODO -->` | 正常坐姿被判为异常的比例 |
+| 单帧推理耗时 | `<!-- TODO -->` ms | K230 端，含前后处理 |
+| 端到端提醒延迟 | `<!-- TODO -->` s | 从姿态超标到语音播报 |
+| 调光响应时间 | `<!-- TODO -->` ms | 环境亮度变化到灯珠响应 |
 
-<a href="https://star-history.com/#xinnan-tech/xiaozhi-esp32-server&Date">
+**调优过程中最有效的三件事**：
 
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=xinnan-tech/xiaozhi-esp32-server&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=xinnan-tech/xiaozhi-esp32-server&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=xinnan-tech/xiaozhi-esp32-server&type=Date" />
- </picture>
-</a>
+1. 数据集里补上真实的**侧光/背光样本**（初期误报几乎都来自光照变化）
+2. 加**连续帧确认**后，误报率断崖式下降
+3. 角度阈值按摄像头实际安装位置**重新标定**，而不是沿用经验值
+
+---
+
+## 👥 团队与分工
+
+第十九届广东省计算机设计大赛 **省赛三等奖**
+
+| 角色 | 职责 |
+|---|---|
+| **队长** | 场景洞察与需求定义、方案设计、技术路线选型、团队分工与排期、代码编写与联调 |
+| 队员 A | 硬件结构、整机装配与焊接、机械结构调试 |
+| 队员 B | 数据采集与标注、模型训练调优、测试验证 |
+
+---
+
+## 🗺️ 后续计划
+
+- [x] 视觉识别 + 语音提醒 + 自适应调光闭环
+- [x] 端云协同：ESP32-S3 通过 MCP 调用云端大模型能力
+- [ ] 坐姿数据记录与可视化（每日坐姿报告）
+- [ ] 用眼时长统计与强制休息提醒
+- [ ] 识别模型进一步轻量化，降低功耗与发热
+- [ ] 离线语音方案，断网也能提醒
+- [ ] 结构件重新设计，做成可量产形态
+
+---
+
+## ❓ 常见问题
+
+<details>
+<summary><strong>Q1：串口收到的数据是乱码</strong></summary>
+
+- 检查 **GND 是否共地**（最常见原因）
+- 检查两边波特率一致（115200, 8N1）
+- 检查 TX/RX 是否交叉接反
+- 用逻辑分析仪或串口助手抓一帧原始字节，对照协议表看是错位还是真乱码
+
+</details>
+
+<details>
+<summary><strong>Q2：灯会莫名其妙自己亮灭 / 喇叭乱叫</strong></summary>
+
+多半是**校验没做或没做对**，噪声帧被当成有效指令执行了。
+请确认：校验和计算覆盖了帧头到置信度的全部字节，且校验失败时直接丢弃该帧、不触发任何动作。
+
+</details>
+
+<details>
+<summary><strong>Q3：识别不准，尤其晚上</strong></summary>
+
+- 补夜间/低照度样本重新训练
+- 给摄像头补一点**红外补光**（不可见光，不影响使用体验）
+- 降低判定灵敏度，或者夜间模式下只保留"低头"这一个最明显的判定项
+
+</details>
+
+<details>
+<summary><strong>Q4：语音提醒太烦人</strong></summary>
+
+调三个地方：`config.h` 里的冷却时间、连续帧数阈值、以及云端提示词里的**话术随机化**（避免每次都是同一句）。
+
+</details>
+
+<details>
+<summary><strong>Q5：舵机抖动 / 灯臂不稳</strong></summary>
+
+- 舵机单独供电，不要和 ESP32-S3 共用 LDO
+- 在电源端并联电容（100µF + 0.1µF）
+- 灯臂做配重，减轻舵机负载
+
+</details>
+
+---
+
+## ⚠️ 免责声明
+
+本项目为**课程 / 竞赛性质的开源作品**，并非医疗器械，识别结果不能作为任何医学诊断依据。坐姿判定基于视觉几何估算，存在误差。若存在视力或脊柱健康方面的疑虑，请咨询专业医疗机构。
+
+---
+
+## 🙏 致谢与许可
+
+- 感谢广东省计算机设计大赛提供的展示平台，以及指导老师在项目过程中的建议
+- 姿态检测基于 **YOLO-Pose**，端侧推理跑在勘智 **K230** 上
+- 语音交互能力基于 ESP32-S3 小智语音助手生态，云端能力通过 **MCP** 扩展
+
+**许可证**：[MIT](LICENSE)
+（若你的代码引用了 GPL 协议的第三方组件，请改为 GPL-3.0 并在 LICENSE 中注明）
+
+---
+
+<div align="center">
+
+如果这个项目对你有帮助，欢迎点个 ⭐
+
+[🔝 回到顶部](#top)
+
+</div>
